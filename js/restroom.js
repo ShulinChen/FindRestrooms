@@ -38,7 +38,7 @@ function initialize() {
       var lon = results[0].geometry.location.F;
       var location = results[0].geometry.location;
       var bounds = new google.maps.LatLngBounds();
-      var infowindow = new google.maps.InfoWindow();
+      var infowindow = null;
       // alert(lat + ":" + lon);
 
       //refer to http://www.refugerestrooms.org/api/docs/#!/restrooms/GET_version_restrooms_by_location_format
@@ -52,35 +52,41 @@ function initialize() {
  	  			var placeName = info[i].name;
  	  			var address = info[i].street + ", " + info[i].city + ", " + info[i].state;
  	  			var comment = info[i].comment;
+ 	  			comment = comment || "No comments yet";  
  	  			var currentLocation = new google.maps.LatLng(info[i].latitude, info[i].longitude);
  	  			// console.log(info[i].latitude + ":" + info[i].longitude);
+ 	  			var googlelink = "http://maps.google.com/?q=" + address;
+ 	  			googlelink = googlelink.replace(/\s/g, '');
+ 	  			console.log((googlelink));
+ 	  			console.log('<a href= ' + googlelink + '> Get There </a>');
+
+
  	  			var marker = new google.maps.Marker({
  	  				map: map,
  	  				title: placeName,
  	  				position: currentLocation,
+ 	  				content : '<div id="infowindow">' +
+								'<h1>' + placeName + '</h1>' + 
+								'<h3>' + address + '<a href= ' + googlelink + '>  Get There </a>' + '</h3>' +
+								'<p>' + comment + '</p>' +
+							'</div>'
  	  				// icon: "img/restroom.jpg",
  	  			});
  	  		
 
- 	  // 			//make sure only one window opens at a time
- 	  // 			if (infowindow) {
-				// 	infowindow.close();
-				// }
+ 	  			//make sure only one window opens at a time
+ 	  			if (infowindow) {
+					infowindow.close();
+				}
 
-				contentString =  '<div id="infowindow">' +
-								'<h1>' + placeName + '</h1>' + 
-								'<h3>' + address + '</h3>' +
-								'<p>' + comment + '</p>' +
-							'</div>';
+				
 
-				// infowindow = new google.maps.InfoWindow({
- 			//   		content: contentString,
-				// });
-
+				infowindow = new google.maps.InfoWindow();
+		
 			
 				google.maps.event.addListener(marker, 'click', function() {
-   					infowindow.setContent(contentString);
-   					infowindow.open(map,marker);
+   					infowindow.setContent(this.content);
+   					infowindow.open(map, marker);
   				});
 
 
